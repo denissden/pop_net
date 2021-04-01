@@ -2,6 +2,7 @@ import datetime
 import enum
 # from sqlalchemy import *
 from sqlalchemy import *
+from flask_login import UserMixin
 from database.db_session import SqlAlchemyBase
 
 
@@ -11,24 +12,20 @@ from database.db_session import SqlAlchemyBase
 #               Column())
 
 
-class User(SqlAlchemyBase):
+class User(UserMixin, SqlAlchemyBase):
     __tablename__ = 'user'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     login = Column(String(16), index=True, unique=True)
     email = Column(String, index=True, unique=True)
-    password = Column(String)
-    first_name = Column(String)
-    last_name = Column(String)
+    password = Column(String, nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
     admin = Column(Boolean, nullable=False, default=False)
     created_date = Column(DateTime, default=datetime.datetime.now)
 
-    def __init__(self, username, email, password, first_name, last_name):
-        self.login = username
-        self.email = email
-        self.password = password
-        self.first_name = first_name
-        self.last_name = last_name
+    def get_id(self):
+        return self.user_id
 
 
 class Friend(SqlAlchemyBase):

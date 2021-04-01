@@ -1,5 +1,6 @@
 from flask import *
 from database import db_session
+from flask_login import LoginManager
 
 import os
 
@@ -13,11 +14,36 @@ def create_app():
 
     # setup with the configuration provided
     app.config.from_object('config.DevelopmentConfig')
-    from apps.pop_net.views import pop_net
-
     db_session.global_init(absp("database/data.sqlite/"))  # init database
 
-    app.register_blueprint(pop_net)
+    #############
+    # init apps #
+    #############
+
+    # authentication
+    from apps.auth.views import auth
+    app.register_blueprint(auth)
+
+    # main pages
+    from apps.main.views import main
+    app.register_blueprint(main)
+
+    ##################
+    # authentication #
+    ##################
+
+    login_manager = LoginManager()
+    login_manager.login_view = "auth.login"
+    login_manager.init_app(app)
+
+    from database.models import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        s = db_session.create_session()
+        user = s.query(User).filter(User.user_id == user_id).first()
+        s.close()
+        return user
 
     # not a good idea to define a function inside another function
     @app.route('/favicon.ico')
