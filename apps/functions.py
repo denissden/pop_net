@@ -1,4 +1,6 @@
 import re
+from database.models import User
+from database.db_session import create_session
 
 email_pattern = \
     re.compile(
@@ -7,3 +9,15 @@ email_pattern = \
 
 def check_email(email):
     return email_pattern.match(email)
+
+
+def get_last_id():
+    s = create_session()
+    query = s.query(User).order_by(User.user_id.desc()).first()
+    if query is not None:
+        return query.user_id
+    return 0
+
+
+def id_exists(user_id):
+    return 0 < user_id <= get_last_id()

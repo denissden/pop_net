@@ -1,7 +1,7 @@
 from flask import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db_session
-from apps.auth import functions
+from apps import functions
 from database.models import User
 from flask_login import login_user, logout_user, login_required
 

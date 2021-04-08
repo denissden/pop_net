@@ -61,7 +61,7 @@ class PostStatusEnum(enum.Enum):
 class Post(SqlAlchemyBase):
     __tablename__ = 'post'
 
-    post_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    post_id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("user.user_id"), nullable=False, index=True)
     date = Column(DateTime, nullable=False)
     text = Column(UnicodeText, nullable=False)
@@ -78,8 +78,8 @@ class CommentStatusEnum(enum.Enum):
 class Comment(SqlAlchemyBase):
     __tablename__ = 'comment'
 
-    comment_id = Column(BigInteger, primary_key=True, autoincrement=True)
-    post_id = Column(BigInteger, ForeignKey("post.post_id"), nullable=False, index=True)
+    comment_id = Column(Integer, primary_key=True, autoincrement=True)
+    post_id = Column(Integer, ForeignKey("post.post_id"), nullable=False, index=True)
     author_id = Column(Integer, ForeignKey("user.user_id"), nullable=False, index=True)
     date = Column(DateTime, nullable=False)
     text = Column(Unicode(256), nullable=False)
@@ -97,18 +97,18 @@ class MessageStatusEnum(enum.Enum):
 class Message(SqlAlchemyBase):
     __tablename__ = 'message'
 
-    message_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    message_id = Column(Integer, primary_key=True, autoincrement=True)
     id_from = Column(Integer, ForeignKey("user.user_id"), nullable=False, index=True)
     id_to = Column(Integer, ForeignKey("user.user_id"), nullable=False, index=True)
-    date = Column(DateTime, nullable=False)
+    date = Column(DateTime, nullable=False, default=datetime.datetime.now())
     text = Column(Unicode(256), nullable=False)
-    status = Column(Enum(MessageStatusEnum), nullable=False)
+    status = Column(Enum(MessageStatusEnum), nullable=False, default="sent")
 
 
 class Photo(SqlAlchemyBase):
     __tablename__ = 'photo'
 
-    message_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    message_id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("user.user_id"), nullable=False, index=True)
     date = Column(DateTime, nullable=False)
     status = Column(Enum(CommentStatusEnum), nullable=False)

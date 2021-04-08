@@ -36,6 +36,10 @@ def create_app():
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
+    ############
+    # database #
+    ############
+
     from database.models import User
 
     @login_manager.user_loader
@@ -44,6 +48,13 @@ def create_app():
         user = s.query(User).filter(User.user_id == user_id).first()
         s.close()
         return user
+
+    #################
+    # event handler #
+    #################
+
+    from engine.event_handler import global_init as event_global_init
+    event_global_init()
 
     # not a good idea to define a function inside another function
     @app.route('/favicon.ico')
