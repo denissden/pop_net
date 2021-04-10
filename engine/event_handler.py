@@ -56,8 +56,8 @@ class EventContainer:
 
 @dataclass()
 class EventHandler:
-    events: dict[str, EventContainer] = field(default_factory=dict)
-    changes: set[EventContainer] = field(default_factory=set)
+    events: dict = field(default_factory=dict)
+    changes: set = field(default_factory=set)
 
     def wait_event(self, name):
         if name not in self.events:

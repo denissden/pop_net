@@ -7,10 +7,14 @@
     <title>Message</title>
     <script src="static/message.js"></script>
 </head>
-<body>
-<input type="text" placeholder="to" id="to"/>
+<body onload="EventLoop()">
+<div id="messages">
+    {% for m in messages %}
+    <p> {{ m }}</p>
+    {% endfor %}
+</div>
 <input type="text" placeholder="message" id="text" maxlength="256"/>
 <p id="message" style="display: none;"></p>
-<button onclick="SendMessage()">Login</button>
+<button onclick="SendMessage()">Send</button>
 </body>
 </html>

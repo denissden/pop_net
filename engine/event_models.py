@@ -10,7 +10,8 @@ class Event:
 @dataclass()
 class Message:
     from_: str
-    value: str
+    text: str
     date: datetime.datetime
+    id_: int
     type_: str = "Message"
 

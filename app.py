@@ -28,6 +28,10 @@ def create_app():
     from apps.main.views import main
     app.register_blueprint(main)
 
+    # messages
+    from apps.message.views import message__
+    app.register_blueprint(message__)
+
     ##################
     # authentication #
     ##################

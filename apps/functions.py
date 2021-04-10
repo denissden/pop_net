@@ -1,6 +1,7 @@
 import re
-from database.models import User
+from database.models import User, Message
 from database.db_session import create_session
+from sqlalchemy import or_, and_
 
 email_pattern = \
     re.compile(
@@ -21,3 +22,15 @@ def get_last_id():
 
 def id_exists(user_id):
     return 0 < user_id <= get_last_id()
+
+
+def _get_messages(from_, to, last_id=18446744073709552000, limit=20):
+    s = create_session()
+    messages = s.query(Message).filter(and_(
+        or_(
+            and_(Message.id_from == from_, Message.id_to == to),
+            and_(Message.id_from == to, Message.id_to == from_)),
+        Message.message_id < last_id)) \
+        .order_by(Message.message_id.desc()).limit(limit)
+
+    return messages

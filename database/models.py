@@ -63,11 +63,11 @@ class Post(SqlAlchemyBase):
 
     post_id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("user.user_id"), nullable=False, index=True)
-    date = Column(DateTime, nullable=False)
+    date = Column(DateTime, nullable=False, default=datetime.datetime.now)
     text = Column(UnicodeText, nullable=False)
-    likes = Column(Integer)
-    views = Column(Integer)
-    status = Column(Enum(PostStatusEnum), nullable=False)
+    likes = Column(Integer, default=0)
+    views = Column(Integer, default=0)
+    status = Column(Enum(PostStatusEnum), nullable=False, default="posted")
 
 
 class CommentStatusEnum(enum.Enum):
@@ -103,6 +103,16 @@ class Message(SqlAlchemyBase):
     date = Column(DateTime, nullable=False, default=datetime.datetime.now())
     text = Column(Unicode(256), nullable=False)
     status = Column(Enum(MessageStatusEnum), nullable=False, default="sent")
+
+    def to_dict(self):
+        return {
+            "message_id": self.message_id,
+            "id_from": self.id_from,
+            "id_to": self.id_to,
+            "date": self.date,
+            "text": self.text,
+            "status": str(self.status)
+        }
 
 
 class Photo(SqlAlchemyBase):
