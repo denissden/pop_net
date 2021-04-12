@@ -2,6 +2,7 @@ from flask import *
 from flask_login import login_required, current_user
 from engine.event_handler import wait_event, get_engine
 import jsonpickle
+from apps.functions import search_login
 
 main = Blueprint('main', __name__)
 
@@ -24,5 +25,11 @@ def test():
 def get_status():
     id_ = str(current_user.user_id)
     status = wait_event(id_)
-    print("status", status)
-    return jsonpickle.dumps(status, unpicklable=False)
+    return jsonpickle.dumps([i.to_dict() for i in status] if status is not None else None, unpicklable=False)
+
+
+@main.route("/get_id")
+@login_required
+def get_me():
+    return str(current_user.user_id)
+

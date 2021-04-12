@@ -1,6 +1,7 @@
+import jsonpickle
 from flask import *
 from flask_login import login_required, current_user
-from apps.functions import id_exists
+from apps.functions import _get_posts
 from database.db_session import create_session
 from database.models import *
 from engine.event_handler import get_engine
@@ -9,7 +10,8 @@ import engine.event_models as events
 post = Blueprint('post', __name__)
 
 
-@post.route("/posts")
+@post.route("/post")
+@login_required
 def posts():
     pass
 
@@ -19,24 +21,29 @@ def posts():
 def new_post():
     text_ = request.values.get("text")
 
-    receiver_id = int(request.args.get("to"))
-    message_ = request.values.get("message")
-
     if len(text_) > 5000:
         return "text too long"
 
     s = create_session()
 
-    new_message = Post(id_from=current_user.user_id,
-                       text=message_)
+    new_post_ = Post(author_id=current_user.user_id,
+                     text=text_,
+                     date=datetime.datetime.now())
 
-    s.add(new_message)
+    s.add(new_post_)
     s.commit()
 
-    e = get_engine()
-    e.add_event(str(receiver_id), events.Message(current_user.user_id,
-                                                 message_,
-                                                 datetime.datetime.now(),
-                                                 new_message.message_id))
-
     return "success"
+
+
+@post.route("/get_posts")
+@login_required
+def get_posts():
+    author_id = int(request.args.get("author"))
+    less_than_id = request.args.get("less")
+    if less_than_id is not None:
+        posts_ = _get_posts(author_id, int(less_than_id))
+    else:
+        posts_ = _get_posts(author_id)
+
+    return jsonpickle.dumps(posts_)

@@ -1,3 +1,5 @@
+import datetime
+
 from flask import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db_session
@@ -52,7 +54,8 @@ def register_post():
                     first_name=first_name,
                     last_name=last_name,
                     login=login_,
-                    password=generate_password_hash(password, method="sha512"),)
+                    password=generate_password_hash(password, method="sha512"),
+                    created_date=datetime.datetime.now())
 
     s.add(new_user)
     s.commit()
@@ -69,8 +72,6 @@ def login():
 def login_post():
     email = request.form.get('email')
     password = request.form.get('password')
-
-    print(email, password)
 
     s = db_session.create_session()
     user = s.query(User).filter(User.email == email).first()

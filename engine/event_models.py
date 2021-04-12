@@ -15,3 +15,11 @@ class Message:
     id_: int
     type_: str = "Message"
 
+    def to_dict(self):
+        return {
+            "id_from": self.from_,
+            "text": self.text,
+            "date": self.date,
+            "id": self.id_,
+            "type": "Message"
+        }

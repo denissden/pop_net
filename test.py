@@ -10,12 +10,10 @@ def a():
     pass
 
 
-m = events.Message(12,
-               12,
-               "tring",
-               "datetime.datetime.now()")
+from apps.functions import _get_dialogs
 
-print(jsonpickle.encode(m, unpicklable=False))
+from database import db_session
 
+db_session.global_init("database/data.sqlite/")  # init database
 
-print(not check_email(input()))
+print(search_login("1").all())

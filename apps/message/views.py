@@ -1,6 +1,6 @@
 from flask import *
 from flask_login import login_required, current_user
-from apps.functions import id_exists, _get_messages
+from apps.functions import id_exists, _get_messages, _get_dialogs, search_login
 from database.db_session import create_session
 from database.models import *
 from engine.event_handler import get_engine
@@ -14,7 +14,7 @@ message__ = Blueprint('message', __name__)
 @login_required
 def message():
     receiver_id = int(request.args.get("to"))
-    return render_template("message.html")
+    return render_template("message.html", messages=[m.text for m in _get_messages(current_user.user_id, receiver_id)])
 
 
 @message__.route("/message", methods=["POST"])
@@ -33,7 +33,8 @@ def message_post():
 
     new_message = Message(id_from=current_user.user_id,
                           id_to=receiver_id,
-                          text=message_)
+                          text=message_,
+                          date=datetime.datetime.now())
 
     s.add(new_message)
     s.commit()
@@ -51,8 +52,23 @@ def message_post():
 @login_required
 def get_messages():
     receiver_id = int(request.args.get("to"))
-    from_id = int(request.args.get("less"))
-    m = _get_messages(current_user.user_id, receiver_id, from_id)
-    for mm in m:
-        print(mm.id_from, mm.id_to, mm.text, mm.date, mm.message_id)
+    less_than_id = request.args.get("less")
+    if less_than_id is not None:
+        m = _get_messages(current_user.user_id, receiver_id, int(less_than_id))
+    else:
+        m = _get_messages(current_user.user_id, receiver_id)
     return jsonpickle.dumps(list(map(Message.to_dict, m)), unpicklable=False)
+
+
+@message__.route("/get_dialogs")
+@login_required
+def get_dialogs():
+    m = _get_dialogs(current_user.user_id)
+    return jsonpickle.dumps(list(map(User.to_dict, m)), unpicklable=False)
+
+
+@message__.route("/search")
+def search_user():
+    pattern = request.args.get("login")
+    users = search_login(pattern)
+    return jsonpickle.dumps(list(map(User.to_dict, users)), unpicklable=False)

@@ -22,10 +22,18 @@ class User(UserMixin, SqlAlchemyBase):
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     admin = Column(Boolean, nullable=False, default=False)
-    created_date = Column(DateTime, default=datetime.datetime.now)
+    created_date = Column(DateTime(timezone=True), default=datetime.datetime.now, nullable=False)
 
     def get_id(self):
         return self.user_id
+
+    def to_dict(self):
+        return {
+            "user_id": self.user_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "login": self.login,
+        }
 
 
 class Friend(SqlAlchemyBase):

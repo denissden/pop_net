@@ -52,7 +52,7 @@ function ProcessEvents(events) {
     console.log(events_json);
     for (var e in events_json) {
         var event = events_json[e]
-        if (event.type_ == "Message") {
+        if (event.type == "Message") {
             AddMessage(event.text)
         }
     }

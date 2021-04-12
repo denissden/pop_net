@@ -22,14 +22,10 @@ def get_engine():
 
 def wait_event(name, interval=1, timeout=20):
     e = get_engine()
-    print(e)
     e.wait_event(name)
     while timeout > 0:
-        print("waiting event", name)
-        print(e)
         timeout -= 1
         res = e.get_changes(name)
-        print(res)
         if res:
             tmp = res.events.copy()
             res.clear()
@@ -68,7 +64,6 @@ class EventHandler:
             res = self.events[name]
             res.events.append(event)
             res.changed = True
-            print("event change")
 
     def clean_events(self):
         remove = set()
